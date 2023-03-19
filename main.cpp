@@ -15,7 +15,8 @@ struct Page : Context {
         {100, 200, 0},
         {200, 200, 0}
     };
-    std::vector<int> commands = { 1, 2, 3, 4, 1 };
+    std::vector<int> commands = { 0, 1, 2, 3, 1 };
+    int steps = 0;
     std::vector<int> executed_commands;
     bool awaiting_input = false;
     void draw() {
@@ -24,19 +25,28 @@ struct Page : Context {
         clearBack();
         db::i++;
         if (!awaiting_input) {
-            commands.push_back(random(1, 4));
-            awaiting_input = true;
+            //commands.push_back(random(0, 3));
+            for (int i = 0; i < commands.size(); i++) {
+                //std::cout << commands.size();
+                setTimeout([this, i]() {
+                    std::cout << "hi";
+                    if (steps == i - 1) {
+                        steps++;
+                    }
+                    if (steps == i) {
+                        fillRect(buttons[commands[i]][0], buttons[commands[i]][1], w, h);
+                    }
+                    if (steps == commands.size() - 1) awaiting_input = true;
+                }, DelayBuffer(i + 1, 1), std::to_string(i));
+                std::cout << std::endl << i << std::endl;
+            }
+            
         }
-        for (int i = 0; i < commands.size(); i++) {
-            setTimeout([this, i]() {
-                buttons[(i == 0) ? (commands.size() - 1) : (i - 1)][2] = 0;
-                std::cout << "hi";
-                if (buttons[i][2] == 0) {
-                    fillRect(buttons[i][0], buttons[i][1], w, h);
-                    buttons[i][2] = 1;
-                }
-            }, DelayBuffer(i, i + 2, 0.0), std::to_string(i));
+        else {
+            
         }
+        
+        
         
 
         /*setTimeout([this]() {
@@ -64,6 +74,7 @@ struct Page : Context {
     }
     virtual void onMouseDown(MouseEvent m) {
         //if (m.m == ray::MOUSE_BUTTON_LEFT && m.x > 0 && m.x < 200 && m.y > 0 && m.y < 200) w -= 1;
+        steps = 0; awaiting_input = false;
     }
     virtual void onMouseReleased(MouseEvent m) {
         //if (m.m == ray::MOUSE_BUTTON_LEFT && m.x > 0 && m.x < 200 && m.y > 0 && m.y < 200) w += 100;
