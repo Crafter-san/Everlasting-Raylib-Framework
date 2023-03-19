@@ -7,17 +7,19 @@ namespace db {
 };
 
 struct Page : Context {
-    int x = 100;
-    int y = 100;
-    int w = 200;
-    std::vector<int> commands;
+    int w = 50;
+    int h = 50;
+    std::vector<std::vector<int>> buttons = {
+        {100, 100, 0},
+        {200, 100, 0},
+        {100, 200, 0},
+        {200, 200, 0}
+    };
+    std::vector<int> commands = { 1, 2, 3, 4, 1 };
     std::vector<int> executed_commands;
     bool awaiting_input = false;
-    void func () {
-        fillRect(100, 100, 50, 50);
-    }
     void draw() {
-        std::cout << "hi";
+        
         backStyle = ray::RAYWHITE;
         clearBack();
         db::i++;
@@ -25,10 +27,22 @@ struct Page : Context {
             commands.push_back(random(1, 4));
             awaiting_input = true;
         }
+        for (int i = 0; i < commands.size(); i++) {
+            setTimeout([this, i]() {
+                buttons[(i == 0) ? (commands.size() - 1) : (i - 1)][2] = 0;
+                std::cout << "hi";
+                if (buttons[i][2] == 0) {
+                    fillRect(buttons[i][0], buttons[i][1], w, h);
+                    buttons[i][2] = 1;
+                }
+            }, DelayBuffer(i, i + 2, 0.0), std::to_string(i));
+        }
         
-        DelayBuffer buff(0.0, 1.0, 0.0);
-        setTimeout(func, buff, "1");
-        //test.execute();
+
+        /*setTimeout([this]() {
+            std::cout << "hi";
+            fillRect(200, 200, 50, 50);
+        }, DelayBuffer(2.0, 2.0, 0.0), "2");*/
         /*fillStyle = ray::RED;
         fillRect(x, y, w, 200);
         fillRect(400, 300, 100, 200);
@@ -40,19 +54,19 @@ struct Page : Context {
 
     }
     virtual void onKeyPressed(int k) {
-        if (k == ray::KEY_A) x -= 1;
+        //if (k == ray::KEY_A) x -= 1;
     }
     virtual void onKeyDown(int k) {
-        if (k == ray::KEY_A) x -= 1;
+        //if (k == ray::KEY_A) x -= 1;
     }
     virtual void onKeyReleased(int k) {
-        if (k == ray::KEY_A) x += 100;
+        //if (k == ray::KEY_A) x += 100;
     }
     virtual void onMouseDown(MouseEvent m) {
-        if (m.m == ray::MOUSE_BUTTON_LEFT && m.x > 0 && m.x < 200 && m.y > 0 && m.y < 200) w -= 1;
+        //if (m.m == ray::MOUSE_BUTTON_LEFT && m.x > 0 && m.x < 200 && m.y > 0 && m.y < 200) w -= 1;
     }
     virtual void onMouseReleased(MouseEvent m) {
-        if (m.m == ray::MOUSE_BUTTON_LEFT && m.x > 0 && m.x < 200 && m.y > 0 && m.y < 200) w += 100;
+        //if (m.m == ray::MOUSE_BUTTON_LEFT && m.x > 0 && m.x < 200 && m.y > 0 && m.y < 200) w += 100;
     }
     using Context::Context;
 };
