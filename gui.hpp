@@ -149,7 +149,7 @@ struct Context : ContextBase {
             //std::cout << std::endl << timeouts.size();
             int i = 0;
             for (auto& timeout : timeouts) {
-                std::cout << std::endl << timeout_map[timeout].buffer.before << std::endl << timeout_map[timeout].buffer.during << std::endl << timeout_map[timeout].buffer.after << std::endl;
+                //std::cout << std::endl << timeout_map[timeout].buffer.before << std::endl << timeout_map[timeout].buffer.during << std::endl << timeout_map[timeout].buffer.after << std::endl;
                 timeout_map[timeout].Update();
                 if (!timeout_map[timeout].buffer.done_after) next_timeouts.push_back(timeout);
                 else timeout_map.erase(timeout);
