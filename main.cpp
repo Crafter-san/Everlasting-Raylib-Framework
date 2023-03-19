@@ -123,6 +123,7 @@ struct Page : Context {
                 else if (test) {
                     commands = {};
                     commands.push_back(random(0, 3));
+                    score = 0;
                     awaiting_input = false;
                     green == false;
                     steps = 0;
