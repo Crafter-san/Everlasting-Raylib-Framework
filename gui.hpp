@@ -17,7 +17,55 @@ struct MouseEvent {
         m = mb;
     }
 };
-
+struct DelayBuffer {
+    double before;
+    double during;
+    double after;
+    bool done_before = false;
+    bool done_during = false;
+    bool done_after = false;
+    DelayBuffer(double b = 0.0, double d = 0.0, double a = 0.0) {
+        before = b;
+        during = d;
+        after = a;
+    }
+};
+struct TimeOut {
+    double startTime;
+    DelayBuffer buffer;
+    std::function<void()> execute;
+    std::string id;
+    bool exists = false;
+    void Update() {
+        double time = ray::GetTime();
+        double elapsedTime = time - startTime;
+        //std::cout << std::endl << elapsedTime << std::endl;
+        if (elapsedTime >= buffer.before && !buffer.done_before) {
+            buffer.done_before = true;
+            startTime = time - buffer.before;
+            elapsedTime = time - startTime;
+        }
+        if (elapsedTime <= buffer.during + buffer.before && buffer.done_before) {
+            execute();
+        }
+        if (elapsedTime >= buffer.during + buffer.before && buffer.done_before) {
+            startTime = time - (buffer.during + buffer.before);
+            elapsedTime = time - startTime;
+            buffer.done_during = true;
+        }
+        if (elapsedTime >= buffer.during + buffer.before + buffer.after && buffer.done_during) {
+            buffer.done_after = true;
+        }
+        //std::cout << std::endl << buffer.done_before << std::endl << buffer.done_during << std::endl << buffer.done_after;
+    }
+    TimeOut(std::function<void()> exec = []() {}, DelayBuffer buff = DelayBuffer(), std::string id_ = "0") {
+        exists = true;
+        id = id_;
+        startTime = ray::GetTime();
+        execute = exec;
+        buffer = buff;
+    }
+};
 struct ContextBase {
     virtual void onKeyPressed(int k) {};
     virtual void onKeyDown(int k) {};
@@ -34,53 +82,7 @@ struct Context : ContextBase {
     int windowWidth;
     int windowHeight;
     int windowFps;
-    struct DelayBuffer {
-        double before;
-        double during;
-        double after;
-        bool done_before = false;
-        bool done_during = false;
-        bool done_after = false;
-        DelayBuffer(double b = 0, double d = 0, double a = 0) {
-            before = b;
-            during = d;
-            after = a;
-        }
-    };
-    struct TimeOut {
-        double startTime;
-        DelayBuffer buffer();
-        std::function<void()> execute;
-        std::string id;
-        bool exists = false;
-        void Update() {
-            double time = ray::GetTime();
-            double elapsedTime = time - startTime;
-            if (elapsedTime >= buffer.before && !buffer.before) {
-                buffer.done_before = true;
-                startTime = time - buffer.before;
-                elapsedTime = time - startTime;
-            }
-            if (elapsedTime <= buffer.during + buffer.before && buffer.done_before) {
-                execute();
-            }
-            if (elapsedTime >= buffer.during + buffer.before && buffer.done_before) {
-                startTime = time - (buffer.during + buffer.before);
-                elapsedTime = time - startTime;
-                buffer.done_during = true;
-            }
-            if (elapsedTime >= buffer.during + buffer.before + buffer.after && buffer.done_during) {
-                buffer.done_after = true;
-            }
-        }
-        TimeOut(auto exec, DelayBuffer buff, std::string id_) {
-            exists = true;
-            id = id_;
-            startTime = ray::GetTime();
-            execute = exec;
-            buffer = buff;
-        }
-    };
+    
     ray::Color strokeStyle = ray::BLACK;
     ray::Color fillStyle = {
         .r = 0,
@@ -137,17 +139,23 @@ struct Context : ContextBase {
     void run() {
         ray::InitWindow(windowWidth, windowHeight, windowTitle.c_str());
         ray::SetTargetFPS(windowFps);
-        std::vector<std::string> next_timeouts;
-        int i = 0;
-        for (auto timeout : timeouts) {
-            std::cout << i;
-            timeout_map[timeout].Update();
-            if (!timeout_map[timeout].buffer.done_after) next_timeouts.push_back(timeout);
-            else timeout_map.erase(timeout);
-            i++;
-        }
-        timeouts = next_timeouts;
+        
+        
+        
+        
+        
         while (!ray::WindowShouldClose()) {
+            std::vector<std::string> next_timeouts;
+            //std::cout << std::endl << timeouts.size();
+            int i = 0;
+            for (auto& timeout : timeouts) {
+                std::cout << std::endl << timeout_map[timeout].buffer.before << std::endl << timeout_map[timeout].buffer.during << std::endl << timeout_map[timeout].buffer.after << std::endl;
+                timeout_map[timeout].Update();
+                if (!timeout_map[timeout].buffer.done_after) next_timeouts.push_back(timeout);
+                else timeout_map.erase(timeout);
+                i++;
+            }
+            timeouts = next_timeouts;
             while (true) {
                 int k = ray::GetKeyPressed();
                 ray::KeyboardKey i = static_cast <ray::KeyboardKey> (k);
@@ -194,12 +202,12 @@ struct Context : ContextBase {
     int random(int min, int max) {
         return ray::GetRandomValue(min, max);
     }
-    void setTimeout(auto exec, DelayBuffer buffer, std::string id) {
+    void setTimeout(std::function<void()> exec, DelayBuffer buffer, std::string id) {
         if (!timeout_map.count(id)) {
             timeout_map[id] = TimeOut(exec, buffer, id);
             timeouts.push_back(id);
         }
-        std::cout << timeouts.size();
+        //std::cout << timeouts.size();
     }
     Context(int width = 400, int height = 400, std::string title = "window", int fps = 60) {
         //timeout_exists = std::vector<bool>(100, false);
