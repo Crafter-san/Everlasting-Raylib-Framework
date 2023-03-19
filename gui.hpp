@@ -11,10 +11,29 @@ struct MouseEvent {
     int x = 0;
     int y = 0;
     int m = 0;
+    ray::Vector2 position;
     MouseEvent(ray::Vector2 pos, int mb) {
         x = pos.x;
         y = pos.y;
+        position = pos;
         m = mb;
+    }
+};
+struct Button {
+    ray::Rectangle rect;
+    int w;
+    int h;
+    int x;
+    int y;
+    bool checkCollision(ray::Vector2 pos) {
+        return ray::CheckCollisionPointRec(pos, rect);
+    }
+    Button(int x = 0, int y = 0, int w = 0, int h = 0) {
+        rect = ray::Rectangle(x + (w / 2), y + (h / 2), w, h);
+        this->w = w;
+        this->h = h;
+        this->x = x;
+        this->y = y;
     }
 };
 struct DelayBuffer {
@@ -82,7 +101,7 @@ struct Context : ContextBase {
     int windowWidth;
     int windowHeight;
     int windowFps;
-    
+    int strokeWeight = 2;
     ray::Color strokeStyle = ray::BLACK;
     ray::Color fillStyle = {
         .r = 0,
@@ -106,12 +125,19 @@ struct Context : ContextBase {
     void rect(int x, int y, int width, int height) {
         ray::DrawRectangleLines(x + (width * -0.5), y + (height * -0.5), width, height, strokeStyle);
     }
+    void rect(ray::Rectangle rect) {
+        ray::DrawRectangleLinesEx(rect, strokeWeight, strokeStyle);
+    }
     void circle(int x, int y, int diameter) {
         ray::DrawCircleLines(x, y, diameter / 2, strokeStyle);
     }
     void fillRect(int x, int y, int width, int height, bool stroke = true) {
         ray::DrawRectangle(x + (width * -0.5), y + (height * -0.5), width, height, fillStyle);
         if (stroke) rect(x, y, width, height);
+    }
+    void fillRect(ray::Rectangle rec, bool stroke = true) {
+        ray::DrawRectangleRec(rec, fillStyle);
+        if (stroke) rect(rec);
     }
     void fillCircle(int x, int y, int diameter, bool stroke = true) {
         ray::DrawCircle(x, y, diameter / 2, fillStyle);
