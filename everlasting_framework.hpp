@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <functional>
 #include <set>
+#include <string>
 namespace ray {
 #include "raylib.h"
 }
