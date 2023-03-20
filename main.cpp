@@ -6,11 +6,11 @@
 struct Page : Context {
     int w = 50;
     int h = 50;
-    std::vector<Button> buttons = {
-        Button(100, 100, w, h),
-        Button(200, 100, w, h),
-        Button(100, 200, w, h),
-        Button(200, 200, w, h)
+    std::vector<Button::RectButton> buttons = {
+        Button::RectButton(100, 100, w, h),
+        Button::RectButton(200, 100, w, h),
+        Button::RectButton(100, 200, w, h),
+        Button::RectButton(200, 200, w, h)
     };
     std::vector <ray::Color> button_colors = { ray::BLUE, ray::RED, ray::GREEN, ray::YELLOW };
     std::vector<int> commands = { 1 };
