@@ -68,7 +68,6 @@ struct TimeOut {
     void Update() {
         double time = ray::GetTime();
         double elapsedTime = time - startTime;
-        //std::cout << std::endl << elapsedTime << std::endl;
         if (elapsedTime >= buffer.before && !buffer.done_before) {
             buffer.done_before = true;
             startTime = time - buffer.before;
@@ -85,7 +84,6 @@ struct TimeOut {
         if (elapsedTime >= buffer.during + buffer.before + buffer.after && buffer.done_during) {
             buffer.done_after = true;
         }
-        //std::cout << std::endl << buffer.done_before << std::endl << buffer.done_during << std::endl << buffer.done_after;
     }
     TimeOut(std::function<void()> exec = []() {}, DelayBuffer buff = DelayBuffer(), std::string id_ = "0") {
         exists = true;
@@ -186,10 +184,8 @@ struct Context : ContextBase {
 
         while (!shouldClose()) {
             std::vector<std::string> next_timeouts;
-            //std::cout << std::endl << timeouts.size();
             int i = 0;
             for (auto& timeout : timeouts) {
-                //std::cout << std::endl << timeout_map[timeout].buffer.before << std::endl << timeout_map[timeout].buffer.during << std::endl << timeout_map[timeout].buffer.after << std::endl;
                 timeout_map[timeout].Update();
                 if (!timeout_map[timeout].buffer.done_after) next_timeouts.push_back(timeout);
                 else timeout_map.erase(timeout);
@@ -250,10 +246,8 @@ struct Context : ContextBase {
             timeout_map[id] = TimeOut(exec, buffer, id);
             timeouts.push_back(id);
         }
-        //std::cout << timeouts.size();
     }
     Context(int width = 400, int height = 400, std::string title = "window", int fps = 60) {
-        //timeout_exists = std::vector<bool>(100, false);
         windowWidth = width;
         windowHeight = height;
         windowTitle = title;
