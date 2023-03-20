@@ -29,7 +29,6 @@ struct Page : Context {
                     if (steps == i - 1) {
                         steps++;
                     }
-                    //std::cout << std::endl << steps << std::endl << commands.size() * 2 << std::endl;
                     if (steps == (commands.size() * 2)-1) {
                         steps = 0;
                         green = true;
@@ -81,28 +80,12 @@ struct Page : Context {
         }
         text("Score: " + std::to_string(score), 500, 200, 20);
         text("High Score: " + std::to_string(high_score), 500, 300, 20);
-        /*setTimeout([this]() {
-            std::cout << "hi";
-            fillRect(200, 200, 50, 50);
-        }, DelayBuffer(2.0, 2.0, 0.0), "2");*/
-        /*fillStyle = ray::RED;
-        fillRect(x, y, w, 200);
-        fillRect(400, 300, 100, 200);
-        fillStyle = ray::BLUE;
-        fillCircle(100, 100, 200);
-        fillCircle(400, 300, 100);
-        text("Simple Game", 20, 20, 20);
-        text(std::to_string(db::i), 200, 200, 20);*/
-
     }
     virtual void onKeyPressed(int k) {
-        //if (k == ray::KEY_A) x -= 1;
     }
     virtual void onKeyDown(int k) {
-        //if (k == ray::KEY_A) x -= 1;
     }
     virtual void onKeyReleased(int k) {
-        //if (k == ray::KEY_A) x += 100;
     }
     virtual void onMousePressed(MouseEvent m) {
         if (green) {
@@ -112,8 +95,6 @@ struct Page : Context {
                     steps += 1;
                     score++;
                     if (high_score < score) high_score = score;
-                    //std::cout << std::endl << commands.size() << std::endl << steps << std::endl;
-                    //break;
                 }
                 else if (test) {
                     commands = {};
@@ -122,7 +103,6 @@ struct Page : Context {
                 }
                 else continue;
                 break;
-                //std::cout << std::endl<< commands.size() << std::endl;
             }
         }
 
@@ -133,7 +113,6 @@ struct Page : Context {
         }
     }
     virtual void onMouseReleased(MouseEvent m) {
-        //if (m.m == ray::MOUSE_BUTTON_LEFT && m.x > 0 && m.x < 200 && m.y > 0 && m.y < 200) w += 100;
     }
     using Context::Context;
 };
