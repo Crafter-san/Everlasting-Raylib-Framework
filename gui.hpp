@@ -25,23 +25,26 @@ struct MouseEvent {
         m = mb;
     }
 };
-struct Button {
-    ray::Rectangle rect;
-    int w;
-    int h;
-    int x;
-    int y;
-    bool checkCollision(ray::Vector2 pos) {
-        return ray::CheckCollisionPointRec(pos, rect);
-    }
-    Button(int x = 0, int y = 0, int w = 0, int h = 0) {
-        rect = ray::Rectangle(x + (w / 2), y + (h / 2), w, h);
-        this->w = w;
-        this->h = h;
-        this->x = x;
-        this->y = y;
-    }
+namespace Button {
+    struct RectButton {
+        ray::Rectangle rect;
+        int w;
+        int h;
+        int x;
+        int y;
+        bool checkCollision(ray::Vector2 pos) {
+            return ray::CheckCollisionPointRec(pos, rect);
+        }
+        RectButton(int x = 0, int y = 0, int w = 0, int h = 0) {
+            rect = ray::Rectangle(x + (w / 2), y + (h / 2), w, h);
+            this->w = w;
+            this->h = h;
+            this->x = x;
+            this->y = y;
+        }
+    };
 };
+
 struct DelayBuffer {
     double before;
     double during;
