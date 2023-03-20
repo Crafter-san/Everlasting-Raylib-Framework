@@ -1,8 +1,6 @@
 
 #include <iostream>
 #include "everlasting_framework.hpp"
-#include <string>
-
 struct Page : Context {
     int w = 50;
     int h = 50;
