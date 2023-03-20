@@ -172,15 +172,19 @@ struct Context : ContextBase {
     std::unordered_map<ray::MouseButton, bool> mouse_pressed;
     std::unordered_map<std::string, TimeOut> timeout_map;
     std::vector<std::string> timeouts;
+    bool forceClose = false;
+    bool shouldClose() {
+        return ray::WindowShouldClose() || forceClose;
+    }
     void run() {
         ray::InitWindow(windowWidth, windowHeight, windowTitle.c_str());
         ray::SetTargetFPS(windowFps);
-        
-        
-        
-        
-        
-        while (!ray::WindowShouldClose()) {
+
+
+
+
+
+        while (!shouldClose()) {
             std::vector<std::string> next_timeouts;
             //std::cout << std::endl << timeouts.size();
             int i = 0;
@@ -237,6 +241,9 @@ struct Context : ContextBase {
     }
     int random(int min, int max) {
         return ray::GetRandomValue(min, max);
+    }
+    void closeWindow() {
+        forceClose = true;
     }
     void setTimeout(std::function<void()> exec, DelayBuffer buffer, std::string id) {
         if (!timeout_map.count(id)) {
