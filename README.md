@@ -1,3 +1,3 @@
 # raylib_framework
 
-Work in progress, TimeOut now works.
+Work in progress C++ framwork for Raylib.
