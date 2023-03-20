@@ -7,6 +7,12 @@
 namespace ray {
 #include "raylib.h"
 }
+
+namespace db {
+    int i = 1;
+};
+
+
 struct MouseEvent {
     int x = 0;
     int y = 0;
