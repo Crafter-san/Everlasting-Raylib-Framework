@@ -1,6 +1,6 @@
 
 #include <iostream>
-#include "gui.hpp"
+#include "everlasting_framework.hpp"
 #include <string>
 
 struct Page : Context {
