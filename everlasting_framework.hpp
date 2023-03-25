@@ -172,7 +172,7 @@ struct Context : ContextBase {
     std::vector<std::string> timeouts;
     bool forceClose = false;
     bool exists = false;
-    bool shouldClose(bool destruct) {
+    bool shouldClose() {
         return ray::WindowShouldClose() || forceClose;
     }
     void run() {
