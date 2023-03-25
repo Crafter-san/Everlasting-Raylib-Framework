@@ -256,6 +256,6 @@ struct Context : ContextBase {
         windowFps = fps;
     }
     ~Context() {
-        if (!shouldClose() || exists) ray::CloseWindow();
+        if (!shouldClose() && exists) ray::CloseWindow();
     }
 };
