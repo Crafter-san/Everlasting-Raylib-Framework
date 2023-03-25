@@ -254,6 +254,6 @@ struct Context : ContextBase {
         windowFps = fps;
     }
     ~Context() {
-        ray::CloseWindow();
+        // ray::CloseWindow();
     }
 };
