@@ -37,7 +37,7 @@ namespace Button {
             return ray::CheckCollisionPointRec(pos, rect);
         }
         RectButton(int x = 0, int y = 0, int w = 0, int h = 0) {
-            rect = ray::Rectangle(x + (w / 2), y + (h / 2), w, h);
+            rect = ray::Rectangle{(float)(x + (w / 2)), (float)(y + (h / 2)), (float)w, (float)h};
             this->w = w;
             this->h = h;
             this->x = x;
