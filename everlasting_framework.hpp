@@ -171,10 +171,12 @@ struct Context : ContextBase {
     std::unordered_map<std::string, TimeOut> timeout_map;
     std::vector<std::string> timeouts;
     bool forceClose = false;
-    bool shouldClose() {
+    bool exists = false;
+    bool shouldClose(bool destruct) {
         return ray::WindowShouldClose() || forceClose;
     }
     void run() {
+        exists = true;
         ray::InitWindow(windowWidth, windowHeight, windowTitle.c_str());
         ray::SetTargetFPS(windowFps);
 
@@ -233,6 +235,7 @@ struct Context : ContextBase {
             draw();
             ray::EndDrawing();
         }
+        ray::CloseWindow();
     }
     int random(int min, int max) {
         return ray::GetRandomValue(min, max);
@@ -253,6 +256,6 @@ struct Context : ContextBase {
         windowFps = fps;
     }
     ~Context() {
-        ray::CloseWindow();
+        if (!shouldClose() || exists) ray::CloseWindow();
     }
 };
