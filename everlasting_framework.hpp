@@ -37,7 +37,7 @@ namespace Button {
             return ray::CheckCollisionPointRec(pos, rect);
         }
         RectButton(int x = 0, int y = 0, int w = 0, int h = 0) {
-            rect = ray::Rectangle{(float)(x + (w / 2)), (float)(y + (h / 2)), (float)w, (float)h};
+            rect = ray::Rectangle{ (float)(x + (w / 2)), (float)(y + (h / 2)), (float)w, (float)h };
             this->w = w;
             this->h = h;
             this->x = x;
@@ -233,7 +233,6 @@ struct Context : ContextBase {
             draw();
             ray::EndDrawing();
         }
-        ray::CloseWindow();
     }
     int random(int min, int max) {
         return ray::GetRandomValue(min, max);
@@ -254,6 +253,6 @@ struct Context : ContextBase {
         windowFps = fps;
     }
     ~Context() {
-        // ray::CloseWindow();
+        ray::CloseWindow();
     }
 };
