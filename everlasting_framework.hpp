@@ -164,7 +164,7 @@ struct Context : ContextBase {
     void text(std::string text, int x, int y, int size) {
         const char* str = text.c_str();
         ray::Vector2 wh = ray::MeasureTextEx(ray::GetFontDefault(), str, size, 1);
-        ray::DrawText(text.c_str(), x - (wh.x/3), y - (wh.y * 2), size, strokeStyle);
+        ray::DrawText(text.c_str(), x - (wh.x/2), y - (wh.y/2), size, strokeStyle);
     }
     void clearBack() {
         ray::ClearBackground(backStyle);
