@@ -140,10 +140,12 @@ struct Context : ContextBase {
         ray::DrawCircleLines(x, y, diameter / 2, strokeStyle);
     }
     void fillRect(int x, int y, int width, int height, bool stroke = true) {
-        ray::DrawRectangle(x + (width * -0.5), y + (height * -0.5), width, height, fillStyle);
+        ray::DrawRectangle(x - (width), y - (height), width, height, fillStyle);
         if (stroke) rect(x, y, width, height);
     }
     void fillRect(ray::Rectangle rec, bool stroke = true) {
+        rec.x = rec.x - (rec.width);
+        rec.y = rec.y - (rec.height);
         ray::DrawRectangleRec(rec, fillStyle);
         if (stroke) rect(rec);
     }
