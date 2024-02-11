@@ -133,7 +133,7 @@ struct Context : ContextBase {
     void rect(int x, int y, int width, int height) {
         ray::DrawRectangleLines(x - (width /2), y - (height /2), width, height, strokeStyle);
     }
-    void rect(ray::Rectangle rect) {
+    void rect(ray::Rectangle rec) {
         rec.x = rec.x - (rec.width / 2);
         rec.y = rec.y - (rec.height / 2);
         ray::DrawRectangleLinesEx(rect, strokeWeight, strokeStyle);
