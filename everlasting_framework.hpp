@@ -134,9 +134,8 @@ struct Context : ContextBase {
         ray::DrawRectangleLines(x - (width /2), y - (height /2), width, height, strokeStyle);
     }
     void rect(ray::Rectangle rec) {
-        rec.x = rec.x - (rec.width / 2);
-        rec.y = rec.y - (rec.height / 2);
-        ray::DrawRectangleLinesEx(rect, strokeWeight, strokeStyle);
+        ray::Rectangle reca = { rec.x - (rec.width / 2), rec.y - (rec.height / 2), rec.width, rec.height };
+        ray::DrawRectangleLinesEx(reca, strokeWeight, strokeStyle);
     }
     void circle(int x, int y, int diameter) {
         ray::DrawCircleLines(x, y, diameter / 2, strokeStyle);
@@ -146,9 +145,8 @@ struct Context : ContextBase {
         if (stroke) rect(x, y, width, height);
     }
     void fillRect(ray::Rectangle rec, bool stroke = true) {
-        rec.x = rec.x - (rec.width/2);
-        rec.y = rec.y - (rec.height/2);
-        ray::DrawRectangleRec(rec, fillStyle);
+        ray::Rectangle reca = { rec.x - (rec.width / 2), rec.y - (rec.height / 2), rec.width, rec.height};
+        ray::DrawRectangleRec(reca, fillStyle);
         if (stroke) rect(rec);
     }
     void fillCircle(int x, int y, int diameter, bool stroke = true) {
