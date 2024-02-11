@@ -37,7 +37,7 @@ namespace Button {
             return ray::CheckCollisionPointRec(pos, rect);
         }
         RectButton(int x = 0, int y = 0, int w = 0, int h = 0) {
-            rect = ray::Rectangle{ (float)(x + (w / 2)), (float)(y + (h / 2)), (float)w, (float)h };
+            rect = ray::Rectangle{ (float)(x), (float)(y), (float)w, (float)h };
             this->w = w;
             this->h = h;
             this->x = x;
@@ -131,21 +131,23 @@ struct Context : ContextBase {
     };
     std::string windowTitle;
     void rect(int x, int y, int width, int height) {
-        ray::DrawRectangleLines(x + (width * -0.5), y + (height * -0.5), width, height, strokeStyle);
+        ray::DrawRectangleLines(x - (width /2), y - (height /2), width, height, strokeStyle);
     }
     void rect(ray::Rectangle rect) {
+        rec.x = rec.x - (rec.width / 2);
+        rec.y = rec.y - (rec.height / 2);
         ray::DrawRectangleLinesEx(rect, strokeWeight, strokeStyle);
     }
     void circle(int x, int y, int diameter) {
         ray::DrawCircleLines(x, y, diameter / 2, strokeStyle);
     }
     void fillRect(int x, int y, int width, int height, bool stroke = true) {
-        ray::DrawRectangle(x - (width), y - (height), width, height, fillStyle);
+        ray::DrawRectangle(x - (width/2), y - (height/2), width, height, fillStyle);
         if (stroke) rect(x, y, width, height);
     }
     void fillRect(ray::Rectangle rec, bool stroke = true) {
-        rec.x = rec.x - (rec.width);
-        rec.y = rec.y - (rec.height);
+        rec.x = rec.x - (rec.width/2);
+        rec.y = rec.y - (rec.height/2);
         ray::DrawRectangleRec(rec, fillStyle);
         if (stroke) rect(rec);
     }
