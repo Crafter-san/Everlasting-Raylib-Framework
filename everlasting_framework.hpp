@@ -162,7 +162,9 @@ struct Context : ContextBase {
         if (stroke) circle(x, y, diameter);
     }
     void text(std::string text, int x, int y, int size) {
-        ray::DrawText(text.c_str(), x, y, size, strokeStyle);
+        const char* str = text.c_str();
+        ray::Vector2 wh = ray::MeasureTextEx(ray::GetFontDefault(), str, size, 1);
+        ray::DrawText(text.c_str(), x - (wh.x/3), y - (wh.y * 2), size, strokeStyle);
     }
     void clearBack() {
         ray::ClearBackground(backStyle);
