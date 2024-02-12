@@ -29,17 +29,26 @@ struct MouseEvent {
 namespace Button {
     struct RectButton {
         ray::Rectangle rect;
+        std::string label;
+        std::string id;
+        ray::Color strokeStyle;
+        ray::Color fillStyle;
         double realWidth;
         double realHeight;
         double w;
         double h;
         double x;
         double y;
+        
         bool checkCollision(ray::Vector2 pos, double realWidth, double realHeight) {
             ray::Rectangle rec = { (rect.x - (rect.width / 2)) * realWidth, (rect.y - (rect.height / 2))*realHeight, rect.width * realWidth, rect.height * realHeight};
             return ray::CheckCollisionPointRec(pos, rec);
         }
-        RectButton(double x = 0, double y = 0, double w = 0, double h = 0) {
+        RectButton(double x = 0, double y = 0, double w = 0, double h = 0, std::string id = "none", std::string label = "none", ray::Color fill = { .r = 0, .g = 0, .b = 0, .a = 255 }, ray::Color stroke = { .r = 0, .g = 0, .b = 0, .a = 255 }) {
+            this->label = label;
+            this->fillStyle = fill;
+            this->strokeStyle = stroke;
+            this->id = id;
             //this->realWidth = cont.realWidth;
             //this->realHeight = cont.realHeight;
             this->rect = ray::Rectangle{ (float)(x), (float)(y), (float)w, (float)h };
@@ -121,10 +130,10 @@ struct Context : ContextBase {
     double realWidth;
     double realHeight;
 
-    std::vector<Button::RectButton> buttons = {};
+    std::vector<Button::RectButton> buttons = {};/*
     std::vector<std::string> button_labels = {};
     std::vector <ray::Color> button_colors = {};
-    std::vector <ray::Color> button_strokes = {};
+    std::vector <ray::Color> button_strokes = {};*/
 
     int windowFps;
     int strokeWeight = 2;
@@ -194,15 +203,15 @@ struct Context : ContextBase {
         ray::ClearBackground(backStyle);
         std::cout << this->buttons.size();
         for (int i = 0; i < buttons.size(); i++) {
-            fillStyle = button_colors[i];
-            strokeStyle = button_strokes[i];
+            fillStyle = buttons[i].fillStyle;
+            strokeStyle = buttons[i].strokeStyle;
             fillRect(buttons[i].rect);
             //if (button_labels[i] == "CONST") {
             //    text("Add Path From Clipboard", buttons[i].x, buttons[i].y, 30);
             //}
             //else {
                 //fillRect(buttons[i].rect);
-            text(button_labels[i], buttons[i].x, buttons[i].y, 30);
+            text(buttons[i].label, buttons[i].x, buttons[i].y, 30);
             // }
         }
     }
@@ -262,7 +271,7 @@ struct Context : ContextBase {
                     std::cout << test;
                     if (test) {
                         onScreenButton = true;
-                        buttonId = button_labels[i];
+                        buttonId = buttons[i].id;
                         break;
                     }
                 }
@@ -301,13 +310,13 @@ struct Context : ContextBase {
             timeouts.push_back(id);
         }
     }
-    Context(double width = 400, double height = 400, std::string title = "window", int fps = 60, std::vector<Button::RectButton> buttons = {}, std::vector<std::string> button_labels = {}, std::vector<ray::Color>button_colors = {}, std::vector<ray::Color>button_strokes = {}) {
+    Context(double width = 400, double height = 400, std::string title = "window", int fps = 60, std::vector<Button::RectButton> buttons = {}/*, std::vector<std::string> button_labels = {}, std::vector<ray::Color>button_colors = {}, std::vector<ray::Color>button_strokes = {}*/) {
         windowWidth = width;
         windowHeight = height;
-        this->buttons = buttons;
+        this->buttons = buttons;/*
         this->button_labels = button_labels;
         this->button_colors = button_colors;
-        this->button_strokes = button_strokes;
+        this->button_strokes = button_strokes;*/
         screenRatio = windowWidth / windowHeight;
         pixelWidth = 640;
         pixelHeight = 640;
