@@ -34,7 +34,8 @@ namespace Button {
         int x;
         int y;
         bool checkCollision(ray::Vector2 pos) {
-            return ray::CheckCollisionPointRec(pos, rect);
+            ray::Rectangle rec = { rect.x - (rect.width / 2), rect.y - (rect.height / 2), rect.width, rect.height };
+            return ray::CheckCollisionPointRec(pos, rec);
         }
         RectButton(int x = 0, int y = 0, int w = 0, int h = 0) {
             rect = ray::Rectangle{ (float)(x), (float)(y), (float)w, (float)h };
@@ -106,8 +107,13 @@ struct ContextBase {
     virtual ~ContextBase() {}
 };
 struct Context : ContextBase {
-    int windowWidth;
-    int windowHeight;
+    double windowWidth;
+    double windowHeight;
+    double screenRatio;
+    double pixelWidth = 640;
+    double pixelHeight = 640;
+    double realWidth;
+    double realHeight;
     int windowFps;
     int strokeWeight = 2;
     ray::Color strokeStyle = ray::BLACK;
@@ -166,6 +172,9 @@ struct Context : ContextBase {
         ray::Vector2 wh = ray::MeasureTextEx(ray::GetFontDefault(), str, size, 1);
         ray::DrawText(text.c_str(), x - (wh.x/2), y - (wh.y/2), size, strokeStyle);
     }
+    void line(double xa, double ya, double xb, double yb) {
+        ray::DrawLine(xa*realWidth, ya*realHeight, xb*realWidth, yb*realHeight, strokeStyle);
+    }
     void clearBack() {
         ray::ClearBackground(backStyle);
     }
@@ -185,7 +194,7 @@ struct Context : ContextBase {
         ray::SetTargetFPS(windowFps);
 
 
-
+        std::cout << "\nscreenRatio: " + std::to_string(screenRatio) + " realWidth: " + std::to_string(realWidth) + " realHeight: " + std::to_string(realHeight) + " windowWidth: " + std::to_string(windowWidth) + " windowHeight: " + std::to_string(windowHeight) + " ";
 
 
         while (!shouldClose()) {
@@ -253,9 +262,15 @@ struct Context : ContextBase {
             timeouts.push_back(id);
         }
     }
-    Context(int width = 400, int height = 400, std::string title = "window", int fps = 60) {
+    Context(double width = 400, double height = 400, std::string title = "window", int fps = 60) {
         windowWidth = width;
         windowHeight = height;
+
+        screenRatio = windowWidth / windowHeight;
+        pixelWidth = 640;
+        pixelHeight = 640;
+        realWidth = windowWidth / (pixelWidth);
+        realHeight = windowHeight / (pixelHeight);
         windowTitle = title;
         windowFps = fps;
     }
