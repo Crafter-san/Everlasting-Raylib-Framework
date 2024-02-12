@@ -29,16 +29,20 @@ struct MouseEvent {
 namespace Button {
     struct RectButton {
         ray::Rectangle rect;
-        int w;
-        int h;
-        int x;
-        int y;
-        bool checkCollision(ray::Vector2 pos) {
-            ray::Rectangle rec = { rect.x - (rect.width / 2), rect.y - (rect.height / 2), rect.width, rect.height };
+        double realWidth;
+        double realHeight;
+        double w;
+        double h;
+        double x;
+        double y;
+        bool checkCollision(ray::Vector2 pos, double realWidth, double realHeight) {
+            ray::Rectangle rec = { (rect.x - (rect.width / 2)) * realWidth, (rect.y - (rect.height / 2))*realHeight, rect.width * realWidth, rect.height * realHeight};
             return ray::CheckCollisionPointRec(pos, rec);
         }
-        RectButton(int x = 0, int y = 0, int w = 0, int h = 0) {
-            rect = ray::Rectangle{ (float)(x), (float)(y), (float)w, (float)h };
+        RectButton(double x = 0, double y = 0, double w = 0, double h = 0) {
+            //this->realWidth = cont.realWidth;
+            //this->realHeight = cont.realHeight;
+            this->rect = ray::Rectangle{ (float)(x), (float)(y), (float)w, (float)h };
             this->w = w;
             this->h = h;
             this->x = x;
@@ -96,14 +100,16 @@ struct TimeOut {
 };
 struct ContextBase {
     virtual void onKeyPressed(int k) {};
+    virtual void onScreenButton(std::string id) {};
     virtual void onKeyDown(int k) {};
     virtual void onKeyUp(int k) {};
     virtual void onKeyReleased(int k) {};
-    virtual void onMousePressed(MouseEvent m) {};
-    virtual void onMouseDown(MouseEvent m) {};
-    virtual void onMouseUp(MouseEvent m) {};
-    virtual void onMouseReleased(MouseEvent m) {};
+    virtual void onMousePressed(MouseEvent m, bool screenButton = false, std::string buttonId = "none") {};
+    virtual void onMouseDown(MouseEvent m, bool screenButton = false, std::string buttonId = "none") {};
+    virtual void onMouseUp(MouseEvent m, bool screenButton = false, std::string buttonId = "none") {};
+    virtual void onMouseReleased(MouseEvent m, bool screenButton = false, std::string buttonId = "none") {};
     virtual void draw() = 0;
+    //virtual void setup() = 0;
     virtual ~ContextBase() {}
 };
 struct Context : ContextBase {
@@ -114,6 +120,12 @@ struct Context : ContextBase {
     double pixelHeight = 640;
     double realWidth;
     double realHeight;
+
+    std::vector<Button::RectButton> buttons = {};
+    std::vector<std::string> button_labels = {};
+    std::vector <ray::Color> button_colors = {};
+    std::vector <ray::Color> button_strokes = {};
+
     int windowFps;
     int strokeWeight = 2;
     ray::Color strokeStyle = ray::BLACK;
@@ -137,30 +149,33 @@ struct Context : ContextBase {
     };
     std::string windowTitle;
     void rect(int x, int y, int width, int height) {
-        ray::DrawRectangleLines(x - (width /2), y - (height /2), width, height, strokeStyle);
+        ray::DrawRectangleLines((x - (width / 2)) * realWidth, (y - (height / 2)) * realHeight, width * realWidth, height * realHeight, strokeStyle);
+    }
+    Button::RectButton newRectButton(double x = 0, double y = 0, double w = 0, double h = 0) {
+        Button::RectButton button(x, y, w, h);
     }
     void rect(ray::Rectangle rec) {
-        ray::Rectangle reca = { rec.x - (rec.width / 2), rec.y - (rec.height / 2), rec.width, rec.height };
+        ray::Rectangle reca = { (rec.x - (rec.width / 2)) * realWidth, (rec.y - (rec.height / 2)) * realHeight, rec.width * realWidth, rec.height * realHeight };
         ray::DrawRectangleLinesEx(reca, strokeWeight, strokeStyle);
     }
     void circle(int x, int y, int diameter) {
-        ray::DrawCircleLines(x, y, diameter / 2, strokeStyle);
+        ray::DrawCircleLines(x * realWidth, y * realHeight, (diameter / 2)*screenRatio, strokeStyle);
     }
     void fillRect(int x, int y, int width, int height, bool stroke = true) {
-        ray::DrawRectangle(x - (width/2), y - (height/2), width, height, fillStyle);
+        ray::DrawRectangle((x - (width / 2)) * realWidth, (y - (height / 2)) * realHeight, width * realWidth, height * realHeight, fillStyle);
         if (stroke) rect(x, y, width, height);
     }
     void fillRect(ray::Rectangle rec, bool stroke = true) {
-        ray::Rectangle reca = { rec.x - (rec.width / 2), rec.y - (rec.height / 2), rec.width, rec.height};
+        ray::Rectangle reca = { (rec.x - (rec.width / 2)) * realWidth, (rec.y - (rec.height / 2)) * realHeight, rec.width * realWidth, rec.height * realHeight };
         ray::DrawRectangleRec(reca, fillStyle);
         if (stroke) rect(rec);
     }
     void fillCircle(int x, int y, int diameter, bool stroke = true) {
-        ray::DrawCircle(x, y, diameter / 2, fillStyle);
+        ray::DrawCircle(x * realWidth, y * realHeight, (diameter / 2)*screenRatio, fillStyle);
         if (stroke) circle(x, y, diameter);
     }
     void gradRect(int x, int y, int width, int height, bool stroke = true) {
-        ray::DrawRectangleGradientH(x + (width * -0.5), y + (height * -0.5), width, height, fillStyle, gradStyle);
+        ray::DrawRectangleGradientH((x + (width * -0.5))*realWidth, y + (height * -0.5), width, height, fillStyle, gradStyle);
         if (stroke) rect(x, y, width, height);
     }
     void gradCircle(int x, int y, int diameter, bool stroke = true) {
@@ -170,13 +185,26 @@ struct Context : ContextBase {
     void text(std::string text, int x, int y, int size) {
         const char* str = text.c_str();
         ray::Vector2 wh = ray::MeasureTextEx(ray::GetFontDefault(), str, size, 1);
-        ray::DrawText(text.c_str(), x - (wh.x/2), y - (wh.y/2), size, strokeStyle);
+        ray::DrawText(text.c_str(), (x * realWidth) - (wh.x / 2), (y * realHeight)-(wh.y / 2), size, strokeStyle);
     }
     void line(double xa, double ya, double xb, double yb) {
         ray::DrawLine(xa*realWidth, ya*realHeight, xb*realWidth, yb*realHeight, strokeStyle);
     }
     void clearBack() {
         ray::ClearBackground(backStyle);
+        std::cout << this->buttons.size();
+        for (int i = 0; i < buttons.size(); i++) {
+            fillStyle = button_colors[i];
+            strokeStyle = button_strokes[i];
+            fillRect(buttons[i].rect);
+            //if (button_labels[i] == "CONST") {
+            //    text("Add Path From Clipboard", buttons[i].x, buttons[i].y, 30);
+            //}
+            //else {
+                //fillRect(buttons[i].rect);
+            text(button_labels[i], buttons[i].x, buttons[i].y, 30);
+            // }
+        }
     }
     std::vector<ray::KeyboardKey> keyboard_keys_cache;
     std::unordered_map<ray::KeyboardKey, bool> keyboard_pressed;
@@ -192,7 +220,7 @@ struct Context : ContextBase {
         exists = true;
         ray::InitWindow(windowWidth, windowHeight, windowTitle.c_str());
         ray::SetTargetFPS(windowFps);
-
+        //setup();
 
         std::cout << "\nscreenRatio: " + std::to_string(screenRatio) + " realWidth: " + std::to_string(realWidth) + " realHeight: " + std::to_string(realHeight) + " windowWidth: " + std::to_string(windowWidth) + " windowHeight: " + std::to_string(windowHeight) + " ";
 
@@ -227,21 +255,32 @@ struct Context : ContextBase {
             }
             for (int m = 0; m < 7; m++) {
                 ray::Vector2 position = ray::GetMousePosition();
+                std::string buttonId = "none";
+                bool onScreenButton = false;
+                for (int i = 0; i < buttons.size(); i++) {
+                    bool test = buttons[i].checkCollision(position, realWidth, realHeight);
+                    std::cout << test;
+                    if (test) {
+                        onScreenButton = true;
+                        buttonId = button_labels[i];
+                        break;
+                    }
+                }
                 MouseEvent mEvent(position, m);
                 ray::MouseButton i = static_cast <ray::MouseButton> (m);
                 if (mouse_pressed[i]) {
                     if (!ray::IsMouseButtonDown(i)) {
                         mouse_pressed[i] = false;
-                        onMouseReleased(mEvent);
+                        onMouseReleased(mEvent, onScreenButton, buttonId);
                     }
-                    else onMouseDown(mEvent);
+                    else onMouseDown(mEvent, onScreenButton, buttonId);
                 }
                 else {
                     if (ray::IsMouseButtonDown(i)) {
                         mouse_pressed[i] = true;
-                        onMousePressed(mEvent);
+                        onMousePressed(mEvent, onScreenButton, buttonId);
                     }
-                    else onMouseUp(mEvent);
+                    else onMouseUp(mEvent, onScreenButton, buttonId);
                 }
             }
             ray::BeginDrawing();
@@ -262,10 +301,13 @@ struct Context : ContextBase {
             timeouts.push_back(id);
         }
     }
-    Context(double width = 400, double height = 400, std::string title = "window", int fps = 60) {
+    Context(double width = 400, double height = 400, std::string title = "window", int fps = 60, std::vector<Button::RectButton> buttons = {}, std::vector<std::string> button_labels = {}, std::vector<ray::Color>button_colors = {}, std::vector<ray::Color>button_strokes = {}) {
         windowWidth = width;
         windowHeight = height;
-
+        this->buttons = buttons;
+        this->button_labels = button_labels;
+        this->button_colors = button_colors;
+        this->button_strokes = button_strokes;
         screenRatio = windowWidth / windowHeight;
         pixelWidth = 640;
         pixelHeight = 640;
