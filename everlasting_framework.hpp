@@ -27,12 +27,28 @@ struct MouseEvent {
     }
 };
 namespace Button {
+    struct Style {
+        ray::Color fillColor;
+        ray::Color strokeColor;
+        Style(ray::Color fill = { .r = 0, .g = 0, .b = 0, .a = 255 }, ray::Color stroke = { .r = 0, .g = 0, .b = 0, .a = 255 }) {
+            this->fillColor = fill;
+            this->strokeColor = stroke;
+        }
+    };
+    struct Meta {
+        std::string id;
+        int intid;
+        std::string label;
+        Meta(std::string id = "none", int intid = 0, std::string label = "none") {
+            this->label = label;
+            this->id = id;
+            this->intid = intid;
+        }
+    };
     struct RectButton {
         ray::Rectangle rect;
-        std::string label;
-        std::string id;
-        ray::Color strokeStyle;
-        ray::Color fillStyle;
+        Style style;
+        Meta meta;
         double realWidth;
         double realHeight;
         double w;
@@ -44,14 +60,12 @@ namespace Button {
             ray::Rectangle rec = { (rect.x - (rect.width / 2)) * realWidth, (rect.y - (rect.height / 2))*realHeight, rect.width * realWidth, rect.height * realHeight};
             return ray::CheckCollisionPointRec(pos, rec);
         }
-        RectButton(double x = 0, double y = 0, double w = 0, double h = 0, std::string id = "none", std::string label = "none", ray::Color fill = { .r = 0, .g = 0, .b = 0, .a = 255 }, ray::Color stroke = { .r = 0, .g = 0, .b = 0, .a = 255 }) {
-            this->label = label;
-            this->fillStyle = fill;
-            this->strokeStyle = stroke;
-            this->id = id;
+        RectButton(ray::Rectangle rect = ray::Rectangle(0,0,0,0), Meta meta = Meta(), Style style = Style()) {
             //this->realWidth = cont.realWidth;
             //this->realHeight = cont.realHeight;
-            this->rect = ray::Rectangle{ (float)(x), (float)(y), (float)w, (float)h };
+            this->rect = { (float)(x), (float)(y), (float)w, (float)h };
+            this->meta = meta;
+            this->style = style;
             this->w = w;
             this->h = h;
             this->x = x;
@@ -59,7 +73,14 @@ namespace Button {
         }
     };
 };
+namespace Animation {
+    struct AnimationBuffer {
+        
+    };
+    struct AnimationFrame {
 
+    };
+}
 struct DelayBuffer {
     double before;
     double during;
@@ -203,8 +224,8 @@ struct Context : ContextBase {
         ray::ClearBackground(backStyle);
         std::cout << this->buttons.size();
         for (int i = 0; i < buttons.size(); i++) {
-            fillStyle = buttons[i].fillStyle;
-            strokeStyle = buttons[i].strokeStyle;
+            fillStyle = buttons[i].style.fillColor;
+            strokeStyle = buttons[i].style.strokeColor;
             fillRect(buttons[i].rect);
             //if (button_labels[i] == "CONST") {
             //    text("Add Path From Clipboard", buttons[i].x, buttons[i].y, 30);
